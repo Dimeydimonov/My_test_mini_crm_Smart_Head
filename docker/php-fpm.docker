@@ -1,35 +1,90 @@
+# docker/php-fpm.docker
 FROM php:8.4-fpm
 
-# Установка зависимостей
-RUN apt-get update && apt-get install -y \
-    libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
-    libonig-dev libzip-dev zip unzip git curl vim mariadb-client \
+# -----------------------
+# Системные пакеты / зависимости для сборки расширений
+# -----------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    apt-transport-https \
+    gnupg2 \
+    wget \
+    curl \
+    git \
+    unzip \
+    zip \
+    vim \
+    procps \
+    pkg-config \
+    build-essential \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    libonig-dev \
+    libzip-dev \
     libicu-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql zip intl
+    libxml2-dev \
+    libmagickwand-dev \
+    imagemagick \
+    mariadb-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# Установка Redis
-RUN pecl install redis \
-    && docker-php-ext-enable redis
+# -----------------------
+# Конфигурация и установка PHP-расширений
+# -----------------------
+# GD (с поддержкой jpeg/freetype/webp), pdo_mysql, zip, intl, exif, bcmath
+RUN docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql zip intl exif bcmath
 
-# Настройка Xdebug
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug \
-    && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.start_with_request=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.discover_client_host=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.log=/tmp/xdebug.log" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.log_level=0" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+# -----------------------
+# PECL-расширения: redis, imagick, xdebug
+# -----------------------
+RUN pecl channel-update pecl.php.net \
+    && pecl install redis imagick xdebug \
+    && docker-php-ext-enable redis imagick xdebug
 
-# Установка Composer
-RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer \
-    && chmod +x /usr/local/bin/composer
+# Настройки Xdebug (режим debug по умолчанию — можно менять через env)
+RUN { \
+        echo "xdebug.mode=debug"; \
+        echo "xdebug.start_with_request=1"; \
+        echo "xdebug.client_port=9003"; \
+        echo "xdebug.discover_client_host=1"; \
+        echo "xdebug.client_host=host.docker.internal"; \
+        echo "xdebug.log=/tmp/xdebug.log"; \
+        echo "xdebug.log_level=0"; \
+    } > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
-# Установка прав
-RUN chown -R www-data:www-data /var/www
+# -----------------------
+# Composer
+# -----------------------
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_HOME=/composer
 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && composer --version
+
+# -----------------------
+# Пользователь и права
+# -----------------------
+# Рабочая папка и права
 WORKDIR /var/www
 
+# Если нужно — можно использовать небезопасный способ chown (удобно в dev)
+# Перед запуском контейнера желательно смонтировать код и выставить права на хосте.
+RUN usermod -u 1000 www-data || true
+RUN groupmod -g 1000 www-data || true
+RUN mkdir -p /var/www \
+    && chown -R www-data:www-data /var/www
+
+# Короткие полезности
+ENV PATH="/var/www/vendor/bin:${PATH}"
+
+# Открываем порт FPM (по умолчанию 9000) — необязательно, но информативно
+EXPOSE 9000
+
+# По-умолчанию запускаем php-fpm
+CMD ["php-fpm"]
