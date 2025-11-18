@@ -13,7 +13,6 @@ class User extends Authenticatable
 {
 
     use HasFactory, Notifiable , HasRoles;
-	use Spatie\Permission\Traits\HasRoles;
 
 
 

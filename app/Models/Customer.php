@@ -12,7 +12,7 @@ class Customer extends Model
     use HasFactory;
 	protected $fillable = [
 		'name',
-		'phone',
+		'phone_number',
 		'email',
 	];
 	public function tickets(): HasMany
