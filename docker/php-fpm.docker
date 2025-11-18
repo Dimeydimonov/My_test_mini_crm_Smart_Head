@@ -1,9 +1,7 @@
 # docker/php-fpm.docker
 FROM php:8.4-fpm
 
-# -----------------------
-# Системные пакеты / зависимости для сборки расширений
-# -----------------------
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     apt-transport-https \
@@ -30,24 +28,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mariadb-client \
     && rm -rf /var/lib/apt/lists/*
 
-# -----------------------
-# Конфигурация и установка PHP-расширений
-# -----------------------
-# GD (с поддержкой jpeg/freetype/webp), pdo_mysql, zip, intl, exif, bcmath
+
 RUN docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
         --with-webp \
     && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql zip intl exif bcmath
 
-# -----------------------
-# PECL-расширения: redis, imagick, xdebug
-# -----------------------
+
 RUN pecl channel-update pecl.php.net \
     && pecl install redis imagick xdebug \
     && docker-php-ext-enable redis imagick xdebug
 
-# Настройки Xdebug (режим debug по умолчанию — можно менять через env)
 RUN { \
         echo "xdebug.mode=debug"; \
         echo "xdebug.start_with_request=1"; \
@@ -58,33 +50,23 @@ RUN { \
         echo "xdebug.log_level=0"; \
     } > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
-# -----------------------
-# Composer
-# -----------------------
+
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_HOME=/composer
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && composer --version
 
-# -----------------------
-# Пользователь и права
-# -----------------------
-# Рабочая папка и права
+
 WORKDIR /var/www
 
-# Если нужно — можно использовать небезопасный способ chown (удобно в dev)
-# Перед запуском контейнера желательно смонтировать код и выставить права на хосте.
 RUN usermod -u 1000 www-data || true
 RUN groupmod -g 1000 www-data || true
 RUN mkdir -p /var/www \
     && chown -R www-data:www-data /var/www
 
-# Короткие полезности
 ENV PATH="/var/www/vendor/bin:${PATH}"
 
-# Открываем порт FPM (по умолчанию 9000) — необязательно, но информативно
 EXPOSE 9000
 
-# По-умолчанию запускаем php-fpm
 CMD ["php-fpm"]
