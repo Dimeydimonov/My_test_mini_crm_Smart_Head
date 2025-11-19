@@ -6,6 +6,6 @@ interface TicketRepositoryInterface
 	public function  update(int $id, array $data);
 	public function findById(int $id);
 	public function getAll(array $filters = []);
-	public function getStatics(string $period);
+	public function getStatistics(string $period);
 	public function countTodayByPhoneNumberOrEmail(string $phone_number, string $email): int;
 }
