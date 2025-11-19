@@ -6,3 +6,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+	use App\Http\Controllers\WidgetController;
+
+	Route::get('/widget', [WidgetController::class, 'index'])->name('widget');
