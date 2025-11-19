@@ -76,4 +76,9 @@ class TicketRepository implements TicketRepositoryInterface
 
 
 	}
+
+	public function getStatistics(string $period)
+	{
+		// TODO: Implement getStatistics() method.
+	}
 }
