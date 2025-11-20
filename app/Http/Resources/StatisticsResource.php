@@ -14,7 +14,7 @@ class StatisticsResource extends JsonResource
 			'total' => $this->resource ['total'],
 	        'new' => $this->resource ['new'],
 	        'in_progress' => $this->resource ['in_progress'],
-	        'processed' => $this->resource ['processed'],
+	        'completed' => $this->resource ['completed'],
         ];
 
     }

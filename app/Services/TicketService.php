@@ -13,6 +13,9 @@
 			private FileService $fileService,
 		){}
 
+		/**
+		 * @throws \Throwable
+		 */
 		public function createTicket(array $data, array $files =[])
 		{
 			return DB::transaction(function () use ($data, $files) {
@@ -39,13 +42,13 @@
 		public function updateStatus( int $ticketId, string $status)
 		{
 			$data = ['status' => $status];
-			if ($status === 'processed') {
+			if ($status === 'completed') {
 				$data['manager_response_date'] = Carbon::now();
 			}
 			return $this->ticketRepository->update($ticketId, $data);
 		}
 
-		public function  getTicketWithDetalis (int $id)
+		public function  getTicketWithDetails(int $id)
 		{
 			return $this->ticketRepository->findById($id);
 		}
@@ -61,9 +64,11 @@
 
 		}
 
-		public function getTicket(array $filters =[])
+		public function getTickets(array $filters =[])
 		{
 			return $this->ticketRepository->getAll($filters);
 		}
+
+
 
 	}

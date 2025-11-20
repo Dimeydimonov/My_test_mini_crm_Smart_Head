@@ -9,9 +9,9 @@
 </head>
 <body>
 <div class="widget-container">
-	<h2>Форма обратной связи</h2>
+	<h2>   Форма обратной связи</h2>
 
-	<div id="formMessage" class="message"></div>
+	<div id="message" class="message"></div>
 
 	<form id="ticketForm">
 		<div class="form-group">
@@ -21,9 +21,9 @@
 		</div>
 
 		<div class="form-group">
-			<label for="phone">Телефон (формат: +380661638162) *</label>
-			<input type="tel" id="phone" name="phone_number" placeholder="+380661638162" required>
-			<div class="error-text" id="error-phone"></div>
+			<label for="phone_number">Телефон (формат: +380661638162) *</label>
+			<input type="tel" id="phone_number" name="phone_number" placeholder="+380661638162" required>
+			<div class="error-text" id="error-phone_number"></div>
 		</div>
 
 		<div class="form-group">
@@ -39,8 +39,8 @@
 		</div>
 
 		<div class="form-group">
-			<label for="user_message">Сообщение *</label>
-			<textarea id="user_message" name="message" required></textarea>
+			<label for="message">Сообщение *</label>
+			<textarea id="message" name="message" required></textarea>
 			<div class="error-text" id="error-message"></div>
 		</div>
 
@@ -48,7 +48,9 @@
 			<label>Файлы (необязательно, макс. 5 файлов по 10MB)</label>
 			<div class="file-input-wrapper">
 				<input type="file" id="files" name="files[]" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
-				<label for="files" class="file-input-label">Выберите файлы</label>
+				<label for="files" class="file-input-label">
+					  Выберите файлы
+				</label>
 			</div>
 			<div class="selected-files" id="selectedFiles"></div>
 			<div class="error-text" id="error-files"></div>
