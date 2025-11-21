@@ -13,6 +13,9 @@
 			private FileService $fileService,
 		){}
 
+		/**
+		 * @throws \Throwable
+		 */
 		public function createTicket(array $data, array $files =[])
 		{
 			return DB::transaction(function () use ($data, $files) {
@@ -45,7 +48,7 @@
 			return $this->ticketRepository->update($ticketId, $data);
 		}
 
-		public function  getTicketWithDetalis (int $id)
+		public function  getTicketWithDetails(int $id)
 		{
 			return $this->ticketRepository->findById($id);
 		}
@@ -61,9 +64,11 @@
 
 		}
 
-		public function getTicket(array $filters =[])
+		public function getTickets(array $filters =[])
 		{
 			return $this->ticketRepository->getAll($filters);
 		}
+
+
 
 	}

@@ -5,12 +5,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>Форма обратной связи</title>
-
 	<link rel="stylesheet" href="{{ asset('css/widget.css') }}">
 </head>
 <body>
 <div class="widget-container">
-	<h2> Форма обратной связи</h2>
+	<h2>   Форма обратной связи</h2>
 
 	<div id="message" class="message"></div>
 
@@ -22,9 +21,9 @@
 		</div>
 
 		<div class="form-group">
-			<label for="phone">Телефон (формат: +380661638162) *</label>
-			<input type="tel" id="phone" name="phone" placeholder="+380661638162" required>
-			<div class="error-text" id="error-phone"></div>
+			<label for="phone_number">Телефон (формат: +380661638162) *</label>
+			<input type="tel" id="phone_number" name="phone_number" placeholder="+380661638162" required>
+			<div class="error-text" id="error-phone_number"></div>
 		</div>
 
 		<div class="form-group">
@@ -49,7 +48,9 @@
 			<label>Файлы (необязательно, макс. 5 файлов по 10MB)</label>
 			<div class="file-input-wrapper">
 				<input type="file" id="files" name="files[]" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
-				<label for="files" class="file-input-label"> Выберите файлы</label>
+				<label for="files" class="file-input-label">
+					  Выберите файлы
+				</label>
 			</div>
 			<div class="selected-files" id="selectedFiles"></div>
 			<div class="error-text" id="error-files"></div>
@@ -61,7 +62,6 @@
 		</button>
 	</form>
 </div>
-
 
 <script src="{{ asset('js/widget.js') }}"></script>
 </body>

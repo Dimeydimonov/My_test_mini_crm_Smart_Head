@@ -3,4 +3,4 @@
 	use App\Http\Controllers\Api\TicketController;
 
 	Route::post('/tickets', [TicketController::class, 'store']);
-	Route::get('/ticket/statistics', [TicketController::class, 'statistics']);
+	Route::get('/tickets/statistics', [TicketController::class, 'statistics']);

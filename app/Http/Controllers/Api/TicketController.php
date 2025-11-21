@@ -17,7 +17,10 @@ class TicketController extends Controller
     )
     {}
 
-  public function store(StoreTicketRequest $request): JsonResponse
+	/**
+	 * @throws \Throwable
+	 */
+	public function store(StoreTicketRequest $request): JsonResponse
   {
 	  if ($this->ticketService->checkDailyLimit($request->phone_number , $request->email)) {
 		  return response()->json([
