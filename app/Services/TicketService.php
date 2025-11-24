@@ -57,10 +57,15 @@
 			return $this->ticketRepository->getStatistics($period);
 		}
 
-		public function  checkDailyLimit(string $phone_number, string $email): bool
-		{
-			$count = $this->ticketRepository->countTodayByPhoneNumberOrEmail($phone_number, $email);
-			return $count > 1;
+			public function  checkDailyLimit(string $phone_number, string $email): bool
+			{
+				$count = $this->ticketRepository->countTodayByPhoneNumberOrEmail($phone_number, $email);
+
+//для теста, потом удалить
+logger()->info("Daily limit check: $count tickets found for $phone_number / $email");
+//для теста, потом удалить
+
+				return $count >= 1;
 
 		}
 
