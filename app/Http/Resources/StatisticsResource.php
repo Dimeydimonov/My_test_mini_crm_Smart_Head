@@ -7,14 +7,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class StatisticsResource extends JsonResource
 {
-
     public function toArray(Request $request): array
     {
         return [
-			'total' => $this->resource ['total'],
-	        'new' => $this->resource ['new'],
-	        'in_progress' => $this->resource ['in_progress'],
-	        'completed' => $this->resource ['completed'],
+            'total' => $this->resource['total'],
+            'new' => $this->resource['new'],
+            'in_progress' => $this->resource['in_progress'],
+            'completed' => $this->resource['completed'],
         ];
 
     }

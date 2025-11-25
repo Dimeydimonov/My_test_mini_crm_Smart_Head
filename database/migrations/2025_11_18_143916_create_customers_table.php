@@ -10,17 +10,16 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table-> string ('name');
-            $table-> string ('phone_number') ->unique()->comment('E.164 format');
-            $table-> string ('email') ->unique();
-			$table->timestamps();
+            $table->string('name');
+            $table->string('phone_number')->unique()->comment('E.164 format');
+            $table->string('email')->unique();
+            $table->timestamps();
 
-			$table->index('phone_number');
-			$table->index('email');
+            $table->index('phone_number');
+            $table->index('email');
 
         });
     }
-
 
     public function down(): void
     {

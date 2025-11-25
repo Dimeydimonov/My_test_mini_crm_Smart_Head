@@ -10,14 +10,15 @@ use PHPUnit\Framework\Attributes\Ticket;
 class Customer extends Model
 {
     use HasFactory;
-	protected $fillable = [
-		'name',
-		'phone_number',
-		'email',
-	];
-	public function tickets(): HasMany
-	{
-		return $this->hasMany(Ticket::class);
-	}
 
+    protected $fillable = [
+        'name',
+        'phone_number',
+        'email',
+    ];
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }

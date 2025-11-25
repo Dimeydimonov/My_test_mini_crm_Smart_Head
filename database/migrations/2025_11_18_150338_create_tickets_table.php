@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     public function up(): void
     {
         Schema::create('tickets', function (Blueprint $table) {
@@ -15,12 +14,11 @@ return new class extends Migration
             $table->string('subject');
             $table->text('message');
             $table->enum('status', ['new', 'in_progress', 'completed'])->default('new');
-			$table->timestamp('manager_response_date') -> nullable();
+            $table->timestamp('manager_response_date')->nullable();
             $table->timestamps();
 
-
-			$table->index('status');
-			$table->index('created_at');
+            $table->index('status');
+            $table->index('created_at');
         });
     }
 

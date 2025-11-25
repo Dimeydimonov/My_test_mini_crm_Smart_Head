@@ -1,79 +1,81 @@
 <?php
 
-	namespace App\Services;
-	use App\Repositories\Contracts\TicketRepositoryInterface;
-	use Carbon\Carbon;
-	use Illuminate\Support\Facades\DB;
+namespace App\Services;
 
-	class TicketService
-	{
-		public function __construct(
-			private TicketRepositoryInterface $ticketRepository,
-			private CustomerService $customerService,
-			private FileService $fileService,
-		){}
+use App\Repositories\Contracts\TicketRepositoryInterface;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
-		/**
-		 * @throws \Throwable
-		 */
-		public function createTicket(array $data, array $files =[])
-		{
-			return DB::transaction(function () use ($data, $files) {
+class TicketService
+{
+    public function __construct(
+        private TicketRepositoryInterface $ticketRepository,
+        private CustomerService $customerService,
+        private FileService $fileService,
+    ) {}
 
-				$customer = $this->customerService->findOrCreateCustomer([
-					'name' => $data['name'],
-					'phone_number' => $data['phone_number'],
-					'email' => $data['email'],
-				]);
+    /**
+     * @throws \Throwable
+     */
+    public function createTicket(array $data, array $files = [])
+    {
+        return DB::transaction(function () use ($data, $files) {
 
-				$ticket = $this->ticketRepository->create([
-					'customer_id' => $customer->id,
-					'subject' => $data['subject'] ?? null,
-					'message' => $data['message'] ?? null,
-					'status' => 'new',
-				]);
+            $customer = $this->customerService->findOrCreateCustomer([
+                'name' => $data['name'],
+                'phone_number' => $data['phone_number'],
+                'email' => $data['email'],
+            ]);
 
-				if (!empty($files)) {
-					$this->fileService->attachFiles($ticket, $files);
-				}
-				return $ticket->load('customer');
-			});
-		}
-		public function updateStatus( int $ticketId, string $status)
-		{
-			$data = ['status' => $status];
-			if ($status === 'completed') {
-				$data['manager_response_date'] = Carbon::now();
-			}
-			return $this->ticketRepository->update($ticketId, $data);
-		}
+            $ticket = $this->ticketRepository->create([
+                'customer_id' => $customer->id,
+                'subject' => $data['subject'] ?? null,
+                'message' => $data['message'] ?? null,
+                'status' => 'new',
+            ]);
 
-		public function  getTicketWithDetails(int $id)
-		{
-			return $this->ticketRepository->findById($id);
-		}
-		public function getStatistics(string $period)
-		{
-			return $this->ticketRepository->getStatistics($period);
-		}
+            if (! empty($files)) {
+                $this->fileService->attachFiles($ticket, $files);
+            }
 
-			public function  checkDailyLimit(string $phone_number, string $email): bool
-			{
-				$count = $this->ticketRepository->countTodayByPhoneNumberOrEmail($phone_number, $email);
+            return $ticket->load('customer');
+        });
+    }
 
-//для теста, потом удалить
-logger()->info("Daily limit check: $count tickets found for $phone_number / $email");
-//для теста, потом удалить
+    public function updateStatus(int $ticketId, string $status)
+    {
+        $data = ['status' => $status];
+        if ($status === 'completed') {
+            $data['manager_response_date'] = Carbon::now();
+        }
 
-				return $count >= 1;
+        return $this->ticketRepository->update($ticketId, $data);
+    }
 
-		}
+    public function getTicketWithDetails(int $id)
+    {
+        return $this->ticketRepository->findById($id);
+    }
 
-		public function getTickets(array $filters =[])
-		{
-			return $this->ticketRepository->getAll($filters);
-		}
+    public function getStatistics(string $period)
+    {
+        return $this->ticketRepository->getStatistics($period);
+    }
 
+    public function checkDailyLimit(string $phone_number, string $email): bool
+    {
+        $count = $this->ticketRepository->countTodayByPhoneNumberOrEmail($phone_number, $email);
 
+        // для теста, потом удалить
+        logger()->info("Daily limit check: $count tickets found for $phone_number / $email");
+        // для теста, потом удалить
 
-	}
+        return $count >= 1;
+
+    }
+
+    public function getTickets(array $filters = [])
+    {
+        return $this->ticketRepository->getAll($filters);
+    }
+}

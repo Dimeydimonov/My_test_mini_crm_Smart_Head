@@ -1,11 +1,11 @@
 <?php
 
-	namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-	class WidgetController extends Controller
-	{
-		public function index()
-		{
-			return view('widget');
-		}
-	}
+class WidgetController extends Controller
+{
+    public function index()
+    {
+        return view('widget');
+    }
+}
