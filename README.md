@@ -1,59 +1,288 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Mini CRM - Система сбора заявок
+Мини-CRM для сбора и обработки заявок с сайта через универсальный виджет.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Технологии
+- **PHP:** 8.4
+- **Laravel:** 12
+- **MySQL:** 8.0
+- **Docker:** Docker Compose
+- **Пакеты:**
+    - spatie/laravel-permission - управление ролями
+    - spatie/laravel-media library - работа с файлами
 
-## About Laravel
+# Требования
+- Docker и Docker Compose
+- Git
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Установка и запуск
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# 1. Клонировать репозиторий
+bash
+git clone https://github.com/Dimeydimonov/My_test_mini_crm_Smart_Head
+cd My_test_mini_crm_Smart_Head
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+# 2. Запустить Docker контейнеры
+bash
+docker compose up -d
 
-## Learning Laravel
+# 3. Установить зависимости
+bash
+docker compose exec php-fpm composer install
+docker compose exec php-fpm npm install
+docker compose exec php-fpm npm run build
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+# 4. Настроить .env
+Файл `.env` уже настроен для работы с Docker.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 5. Запустить миграции и seeders
+bash
+docker compose exec php-fpm php artisan migrate:fresh --seed
 
-## Laravel Sponsors
+# 6. Открыть в браузере
+- *Главная страница:* http://localhost
+- *Виджет:* http://localhost/widget
+- *Админ-панель:* http://localhost/admin/dashboard
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#Тестовые данные
+После выполнения seeders доступны следующие пользователи:
 
-### Premium Partners
+# Менеджер
+- *Email:* manager.test@google.com
+- *Password:* 1111
+- *Роль:* manager
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Администратор
+- *Email:* admin.test@google.com
+- *Password:* password123
+- *Роль:* admin
 
-## Contributing
+# Тестовые данные
+- *Клиенты:* 68 записей
+- *Заявки:* 55 записей
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Встраивание виджета
 
-## Code of Conduct
+Для встраивания виджета на сторонний сайт используйте iframe:
+html
+<iframe 
+    src="http://localhost/widget" 
+    width="100%" 
+    height="700" 
+    style="border: none; border-radius: 10px;">
+</iframe>
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+# API Endpoints
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# POST /api/tickets
+Создание новой заявки
 
-## License
+*Параметры:*
+- `name` (required, string) - Имя клиента
+- `phone_number` (required, string, E.164) - Телефон в формате +1234567890
+- `email` (required, email) - Email клиента
+- `subject` (required, string) - Тема заявки
+- `message` (required, string) - Текст сообщения
+- `files[]` (optional, array) - Файлы (макс. 5 файлов по 10MB)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+*Пример запроса (curl):*
+bash
+curl -X POST http://localhost/api/tickets \
+  -F "name=Иван Иванов" \
+  -F "phone=+1234567890" \
+  -F "email=ivan@example.com" \
+  -F "subject=Вопрос по продукту" \
+  -F "message=Здравствуйте, интересует..."
+
+
+*Успешный ответ (201):*
+json
+{
+    "message": "Заявка успешно создана!",
+    "data": {
+        "id": 51,
+        "subject": "Вопрос по продукту",
+        "message": "Здравствуйте, интересует...",
+        "status": "new",
+        "customer": {
+            "id": 21,
+            "name": "Иван Иванов",
+            "phone": "+1234567890",
+            "email": "ivan@example.com"
+        },
+        "created_at": "2025-11-20 15:30:00"
+    }
+}
+
+
+# GET /api/tickets/statistics
+Получить статистику заявок
+
+*Параметры:*
+- `period` (optional, string) - Период: day, week, month (по умолчанию: day)
+
+*Пример запроса:*
+bash
+curl http://localhost/api/tickets/statistics?period=week
+
+*Ответ (200):*
+json
+{
+    "period": "week",
+    "data": {
+        "total": 15,
+        "new": 5,
+        "in_progress": 7,
+        "completed": 3
+    }
+}
+
+
+# Функционал админ-панели
+
+# Dashboard
+- Статистика заявок за день/неделю/месяц
+- Количество заявок по статусам
+
+# Управление заявками
+- Просмотр списка всех заявок
+- Фильтрация по:
+    - Статусу (новая/в работе/обработана)
+    - Дате создания
+    - Email клиента
+    - Телефону клиента
+- Просмотр деталей заявки
+- Скачивание прикрепленных файлов
+- Изменение статуса заявки
+
+# Запуск тестов
+bash
+docker compose exec php-fpm php artisan test
+
+ PASS  Tests\Unit\ExampleTest
+✓ that true is true
+
+PASS  Tests\Feature\Admin\AdminTicketTest
+✓ manager can view tickets                                                                                                                         0.24s  
+✓ manager can change status                                                                                                                        0.02s  
+✓ guest cannot access admin                                                                                                                        0.01s
+
+PASS  Tests\Feature\Api\TicketApiTest
+✓ can create ticket via api                                                                                                                        0.02s  
+✓ cannot create ticket with invalid phone number                                                                                                   0.01s  
+✓ daily limit works                                                                                                                                0.01s  
+✓ can get statistics                                                                                                                               0.01s
+
+PASS  Tests\Feature\Auth\AuthenticationTest
+✓ login screen can be rendered                                                                                                                     0.02s  
+✓ users can authenticate using the login screen                                                                                                    0.01s  
+✓ users can not authenticate with invalid password                                                                                                 0.21s  
+✓ users can log out                                                                                                                                 0.01s
+
+PASS  Tests\Feature\Auth\EmailVerificationTest
+✓ email verification screen can be rendered                                                                                                        0.02s  
+✓ email can be verified                                                                                                                            0.01s  
+✓ email is not verified with invalid hash                                                                                                          0.01s
+
+PASS  Tests\Feature\Auth\PasswordConfirmationTest
+✓ confirm password screen can be rendered                                                                                                          0.02s  
+✓ password can be confirmed                                                                                                                        0.01s  
+✓ password is not confirmed with invalid password                                                                                                  0.21s
+
+PASS  Tests\Feature\Auth\PasswordResetTest
+✓ reset password link screen can be rendered                                                                                                       0.01s  
+✓ reset password link can be requested                                                                                                             0.21s  
+✓ reset password screen can be rendered                                                                                                            0.21s  
+✓ password can be reset with valid token                                                                                                           0.21s
+
+PASS  Tests\Feature\Auth\PasswordUpdateTest
+✓ password can be updated                                                                                                                          0.02s  
+✓ correct password must be provided to update password                                                                                             0.01s
+
+PASS  Tests\Feature\Auth\RegistrationTest
+✓ registration screen can be rendered                                                                                                              0.02s  
+✓ new users can register                                                                                                                           0.01s
+
+PASS  Tests\Feature\ExampleTest
+✓ the application returns a successful response                                                                                                    0.01s
+
+PASS  Tests\Feature\ProfileTest
+✓ profile page is displayed                                                                                                                        0.02s  
+✓ profile information can be updated                                                                                                               0.01s  
+✓ email verification status is unchanged when the email address is unchanged                                                                       0.01s  
+✓ user can delete their account                                                                                                                    0.02s  
+✓ correct password must be provided to delete account                                                                                              0.01s
+
+Tests:    32 passed (89 assertions)
+Duration: 1.72s
+
+
+
+
+# Структура проекта
+
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Admin/           # Контроллеры админки
+│   │   ├── Api/             # API контроллеры
+│   │   └── WidgetController # Контроллер виджета
+│   ├── Requests/            # Form Request классы
+│   └── Resources/           # API Resources
+├── Models/                  # Eloquent модели
+├── Repositories/            # Репозитории
+│   ├── Contracts/           # Интерфейсы
+│   └── *Repository.php      # Реализации
+└── Services/                # Бизнес-логика
+
+database/
+├── factories/               # Фабрики для тестовых данных
+├── migrations/              # Миграции БД
+└── seeders/                 # Seeders
+
+resources/views/
+├── admin/                   # Blade шаблоны админки
+└── widget.blade.php         # Виджет
+
+tests/
+├── Feature/                 # Feature тесты
+└── Unit/                    # Unit тесты
+
+
+# Особенности реализации
+
+# Архитектурные решения
+- *Repository Pattern:* Изоляция работы с БД от бизнес-логики
+- *Service Layer:* Вся бизнес-логика инкапсулирована в сервисах
+- *Form Requests:* Валидация вынесена в отдельные классы
+- *API Resources:* Трансформация моделей для API
+
+# Безопасность
+- Валидация телефона в формате E.164
+- CSRF защита для веб-форм
+- Ограничение размера файлов (10MB)
+- Ограничение типов файлов
+- Дневной лимит на отправку заявок (1 в сутки с одного номера/email)
+- Авторизация через middleware и роли
+
+# Файлы
+- Использование Spatie Media Library
+- Автоматическое управление файлами
+- Возможность скачивания через админку
+
+# Рекомендации по улучшению
+
+1. *Уведомления:*
+    - Email уведомления менеджерам о новых заявках
+    - Email уведомления пользователя о смене статуса заявки
+   
+2. *Функционал:*
+    - Экспорт заявок в Excel
+    - История изменений статуса
+
+3. *Интеграции:*
+    - Telegram/Slack боты для уведомлений
+  
+4. *Производительность:*
+    - Индексы для частых запросов (хотя с малым обьемом БД не играет роли)
+
