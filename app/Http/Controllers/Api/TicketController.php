@@ -23,18 +23,14 @@ class TicketController extends Controller
                 'message' => 'Вы сегодня создавали заявку. Попробуйте завтра.',
             ], 429);
         }
-
         $data = $request->validated();
         $files = $request->hasFile('files') ? $request->file('files') : [];
-
         $ticket = $this->ticketService->createTicket($data, $files);
-
         return response()->json([
             'message' => ' Заявка успешно создана',
             'data' => new TicketResource($ticket),
         ], 201);
     }
-
     public function statistics(Request $request): JsonResponse
     {
         $period = $request->query('period', 'day');
@@ -44,7 +40,6 @@ class TicketController extends Controller
             ], 400);
         }
         $statistics = $this->ticketService->getStatistics($period);
-
         return response()->json([
             'period' => $period,
             'data' => new StatisticsResource($statistics),
